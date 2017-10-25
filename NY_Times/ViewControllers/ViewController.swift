@@ -16,6 +16,9 @@ class ViewController: UIViewController  {
     var cache:NSCache<AnyObject, AnyObject>!
     var resultArray: NSArray = []
     var refreshCtrl = UIRefreshControl()
+    var pageNo:Int=0
+    var limit:Int=10
+    var offset:Int=0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +26,15 @@ class ViewController: UIViewController  {
         cache = NSCache()
         refreshCtrl.addTarget(self, action: #selector(self.refreshTableView), for: .valueChanged)
         tableView.addSubview(refreshCtrl)
-        refreshTableView()
+        reloadTableView(limit: "10", offset: "0")
     }
     
     @objc func refreshTableView(){
-        ModelController().postRequest(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=20&offset=0&api-key=\(apiKey)", param: [:]){(result) -> () in
+        reloadTableView(limit: "10", offset: "0")
+    }
+    
+    @objc func reloadTableView(limit: String, offset: String){
+        ModelController().postRequest(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=\(limit)&offset=\(offset)&api-key=\(apiKey)", param: [:]){(result) -> () in
             if let status = result["status"] as? String{
                 DispatchQueue.main.async{
                     if status == "OK"{
@@ -91,6 +98,17 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
         
         cell.descriptionLabel.attributedText = attributedString
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
+        if indexPath.row+1 == self.resultArray.count {
+            print("last row reached")
+            
+            pageNo = pageNo+1
+            limit = limit+10
+            offset = limit * pageNo
+            reloadTableView(limit: "\(limit)", offset: "\(offset)")
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
