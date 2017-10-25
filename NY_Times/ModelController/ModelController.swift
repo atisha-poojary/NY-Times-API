@@ -31,17 +31,10 @@ public class ModelController{
                 completion("request nil" as AnyObject)
             }
             do {
-                let json = try JSONSerialization.jsonObject(with: data! as Data, options:.allowFragments)
-                if let dict = json as? NSDictionary {
-                    if let status = dict["status"] as? String{
-                        DispatchQueue.main.async{
-                            if status == "OK"{
-                                completion(dict as AnyObject)
-                            }
-                            else {
-                                completion(dict as AnyObject)
-                            }
-                        }
+                if data != nil{
+                    let json = try JSONSerialization.jsonObject(with: data! as Data, options:.allowFragments)
+                    if let dict = json as? NSDictionary {
+                        completion(dict as AnyObject)
                     }
                 }
             }

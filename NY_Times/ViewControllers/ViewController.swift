@@ -39,10 +39,19 @@ class ViewController: UIViewController  {
                 }
             }
             else{
-                DispatchQueue.main.async{
-                    let alert = UIAlertController(title: "Message", message: "Oops! Server error. Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
+                if let message = result["message"] as? String{
+                    DispatchQueue.main.async{
+                        let alert = UIAlertController(title: "Message", message: message, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+                else{
+                    DispatchQueue.main.async{
+                        let alert = UIAlertController(title: "Message", message: "Oops! Server error. Please try again later.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 }
             }
         }
