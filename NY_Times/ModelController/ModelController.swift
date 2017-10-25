@@ -8,7 +8,8 @@
 
 import Foundation
 import SystemConfiguration
-
+import UIKit
+ 
 public class ModelController{
     func postRequest(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ())) {
         let url: NSURL = NSURL(string: url)!
@@ -29,10 +30,6 @@ public class ModelController{
             if response == nil {
                 completion("request nil" as AnyObject)
             }
-            print("Response: \(String(describing: response))")
-            let strData = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-            print("Body: \(String(describing: strData))")
-            
             do {
                 let json = try JSONSerialization.jsonObject(with: data! as Data, options:.allowFragments)
                 if let dict = json as? NSDictionary {
@@ -78,4 +75,41 @@ public class ModelController{
         
         return (isReachable && !needsConnection)
     }
-}
+    
+    func dateConverter(isoDate: String) -> String{
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        
+        let outputDateFormatter = DateFormatter()
+        outputDateFormatter.dateFormat = "dd MMM"
+        
+        let date = inputDateFormatter.date(from: isoDate)!
+        let resultString = outputDateFormatter.string(from: date)
+
+        return resultString
+    }
+ }
+
+ 
+ extension UIImageView {
+    
+    func downloadedFrom(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+        guard let url = URL(string: link) else { return }
+        downloadedFrom(url: url, contentMode: mode)
+    }
+    
+    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+        contentMode = mode
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard
+                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
+                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
+                let data = data, error == nil,
+                let image = UIImage(data: data)
+                else { return }
+            DispatchQueue.main.async() { () -> Void in
+                self.image = image
+            }
+            }.resume()
+    }
+ }

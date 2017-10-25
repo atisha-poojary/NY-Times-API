@@ -11,23 +11,20 @@ import UIKit
 class ViewController: UIViewController  {
     
     @IBOutlet weak var tableView: UITableView!
-    var task: URLSessionDownloadTask!
-    var session: URLSession!
+    
     var cache:NSCache<AnyObject, AnyObject>!
     var resultArray: NSArray = []
+    let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        session = URLSession.shared
-        task = URLSessionDownloadTask()
         cache = NSCache()
-        
         self.refreshTableView()
     }
     
     func refreshTableView(){
-        ModelController().postRequest(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=5&offset=50&api-key=4ff00b29642f478cb1e55487aa7dd1f7", param: [:]){(result) -> () in
+        ModelController().postRequest(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=5&offset=50&api-key=\(apiKey)", param: [:]){(result) -> () in
             if let status = result["status"] as? String{
                 DispatchQueue.main.async{
                     if status == "OK"{
@@ -65,32 +62,33 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
         if (self.cache.object(forKey: "\(dataDict["slug_name"] as! String)" as AnyObject) != nil){
             cell.thumbnailImage.image = self.cache.object(forKey: "\(dataDict["slug_name"] as! String)" as AnyObject) as? UIImage }
         else{
-            let multimediaArr = dataDict["multimedia"] as? NSArray
-            for multimediaDict in multimediaArr!{
-                let dict: [String:AnyObject] = multimediaDict as! [String:AnyObject]
-                if dict["format"] as! String == "mediumThreeByTwo440"{
-                    let url:URL! = URL(string: dict["url"] as! String)
-                    if url != nil{
-                        self.task = self.session.downloadTask(with: url, completionHandler: { (location, response, error) -> Void in
-                            if let data = try? Data(contentsOf: url){
-                                DispatchQueue.main.async(execute: { () -> Void in
-                                    let img:UIImage! = UIImage(data: data)
-                                    if img != nil{
-                                        self.cache.setObject(img, forKey: "\(dataDict["slug_name"] as! String)" as AnyObject)
-                                        cell.thumbnailImage.image = img
-                                    }
-                                })
-                            }
-                        })
-                        self.task.resume()
+            if let multimediaArr = dataDict["multimedia"] as? NSArray {
+                for multimediaDict in multimediaArr{
+                    let dict: [String:AnyObject] = multimediaDict as! [String:AnyObject]
+                    if dict["format"] as! String == "mediumThreeByTwo440"{
+                        cell.thumbnailImage.downloadedFrom(link: dict["url"] as! String)
                     }
                 }
             }
         }
-        cell.dateLabel.text = (dataDict["published_date"] as! String)
+        cell.dateLabel.text = ModelController().dateConverter(isoDate:(dataDict["published_date"] as! String))
         cell.imageByLabel.text = (dataDict["byline"] as! String)
-        cell.descriptionLabel.text = (dataDict["abstract"] as! String)
-       
+        cell.descriptionLabel.text = "\((dataDict["title"] as! String)) \n\((dataDict["abstract"] as! String))"
+        
+        let attributedString = NSMutableAttributedString(string:"\((dataDict["title"] as! String))\n")
+        
+        let attrs = [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 17.0)]
+        let abstract = NSMutableAttributedString(string:(dataDict["abstract"] as! String), attributes:attrs)
+        attributedString.append(abstract)
+
+        cell.descriptionLabel.attributedText = attributedString
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var dataDict: [String:AnyObject] = self.resultArray[(indexPath as NSIndexPath).row] as! [String:AnyObject]
+        let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+        vc.urlString = (dataDict["url"] as! String)
+        self.navigationController?.show(vc, sender: nil)
     }
 }
