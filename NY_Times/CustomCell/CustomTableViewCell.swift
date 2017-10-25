@@ -14,6 +14,7 @@ class CustomTableViewCell: UITableViewCell {
     @IBOutlet weak var imageByLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint?
     
     override func awakeFromNib() {
         super.awakeFromNib()

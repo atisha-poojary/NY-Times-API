@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="udu-9k-FXS">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="udu-9k-FXS">
                                 <rect key="frame" x="0.0" y="64" width="375" height="560"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
@@ -26,7 +26,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="528"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nAX-kF-Cut" id="dHz-HG-aZ5">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="527.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="528"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0dB-gS-M9F">
@@ -63,7 +63,7 @@
                                                     <rect key="frame" x="0.0" y="521.5" width="375" height="1"/>
                                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="1" id="Lxb-9N-3ng"/>
+                                                        <constraint firstAttribute="height" constant="0.5" id="Lxb-9N-3ng"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -93,6 +93,7 @@
                                             <outlet property="dateLabel" destination="gdr-uP-E6H" id="xaM-6N-VNu"/>
                                             <outlet property="descriptionLabel" destination="iCD-97-j5Y" id="aCX-7z-HDg"/>
                                             <outlet property="imageByLabel" destination="MyU-LL-56c" id="xwS-FK-cXD"/>
+                                            <outlet property="imageViewHeightConstraint" destination="PNL-FN-Ypy" id="JQb-y6-f6r"/>
                                             <outlet property="thumbnailImage" destination="0dB-gS-M9F" id="T6m-sA-8aG"/>
                                         </connections>
                                     </tableViewCell>
