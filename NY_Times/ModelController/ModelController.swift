@@ -76,7 +76,10 @@ public class ModelController{
         let outputDateFormatter = DateFormatter()
         outputDateFormatter.dateFormat = "dd MMM"
         
-        let date = inputDateFormatter.date(from: isoDate)!
+        guard let date = inputDateFormatter.date(from: isoDate) else {
+            return ""
+        }
+
         let resultString = outputDateFormatter.string(from: date)
 
         return resultString
