@@ -81,7 +81,6 @@ public class ModelController{
         }
 
         let resultString = outputDateFormatter.string(from: date)
-
         return resultString
     }
  }
@@ -105,7 +104,8 @@ public class ModelController{
                 else { return }
             DispatchQueue.main.async() { () -> Void in
                 self.image = image
+           
             }
-            }.resume()
+        }.resume()
     }
  }

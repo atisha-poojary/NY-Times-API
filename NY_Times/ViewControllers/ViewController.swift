@@ -14,10 +14,10 @@ class ViewController: UIViewController  {
     
     let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
     var cache:NSCache<AnyObject, AnyObject>!
-    var resultArray: NSArray = []
+    var resultArray: [AnyObject] = []
     var refreshCtrl = UIRefreshControl()
     var pageNo:Int=0
-    var limit:Int=10
+    var limit:Int=20
     var offset:Int=0
     
     override func viewDidLoad() {
@@ -26,11 +26,11 @@ class ViewController: UIViewController  {
         cache = NSCache()
         refreshCtrl.addTarget(self, action: #selector(self.refreshTableView), for: .valueChanged)
         tableView.addSubview(refreshCtrl)
-        reloadTableView(limit: "10", offset: "0")
+        reloadTableView(limit: "20", offset: "0")
     }
     
     @objc func refreshTableView(){
-        reloadTableView(limit: "10", offset: "0")
+        reloadTableView(limit: "20", offset: "0")
     }
     
     @objc func reloadTableView(limit: String, offset: String){
@@ -38,8 +38,7 @@ class ViewController: UIViewController  {
             if let status = result["status"] as? String{
                 DispatchQueue.main.async{
                     if status == "OK"{
-                        self.resultArray = (result["results"] as? NSArray)!
-                        print("self.resultArray: \(self.resultArray)")
+                        self.resultArray = (result["results"] as? [AnyObject])!
                         self.tableView.reloadData()
                         self.refreshCtrl.endRefreshing()
                     }
@@ -111,8 +110,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
         if indexPath.row+1 == self.resultArray.count {
-            print("last row reached")
-            
             pageNo = pageNo+1
             limit = limit+10
             offset = limit * pageNo
