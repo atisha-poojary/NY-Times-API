@@ -6,46 +6,25 @@
 //  Copyright © 2017 Atisha Poojary. All rights reserved.
 //
 
-import Foundation
-import SystemConfiguration
-import UIKit
+ import UIKit
+ import SystemConfiguration
+
+ public protocol APIMethodDelegate {
+    func isInternetAvailable() -> Bool
+    func getRequest(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ()))
+ }
  
-public class ModelController{
-    func postRequest(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ())) {
-        let url: NSURL = NSURL(string: url)!
-        let request: NSMutableURLRequest = NSMutableURLRequest(url: url as URL)
-        
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        if param.isEmpty{
-        }
-        else{
-            request.httpBody = try! JSONSerialization.data(withJSONObject: param, options: [])
-        }
-        
-        let task = URLSession.shared.dataTask(with: request as URLRequest) {
-            data, response, error in
-            if response == nil {
-                completion("request nil" as AnyObject)
-            }
-            do {
-                if data != nil{
-                    let json = try JSONSerialization.jsonObject(with: data! as Data, options:.allowFragments)
-                    if let dict = json as? NSDictionary {
-                        completion(dict as AnyObject)
-                    }
-                }
-            }
-            catch let error as NSError {
-                completion(error as AnyObject)
-            }
-        }
-        task.resume()
-    }
-    
-    func isInternetAvailable() -> Bool {
+ public protocol DateDelegate {
+    func dateConverter(isoDate: String) -> String
+ }
+ 
+ public protocol UIImageViewDelegate {
+    func downloadedFromLink(link: String, contentMode mode: UIViewContentMode)
+    func downloadedFromURL(url: URL, contentMode mode: UIViewContentMode)
+ }
+ 
+ class ModelController: APIMethodDelegate, DateDelegate{
+    func isInternetAvailable() -> Bool{
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
         zeroAddress.sin_family = sa_family_t(AF_INET)
@@ -69,7 +48,39 @@ public class ModelController{
         return (isReachable && !needsConnection)
     }
     
-    func dateConverter(isoDate: String) -> String{
+    func getRequest(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ())){
+        let url: NSURL = NSURL(string: url)!
+        let request: NSMutableURLRequest = NSMutableURLRequest(url: url as URL)
+        
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if !param.isEmpty{
+            request.httpBody = try! JSONSerialization.data(withJSONObject: param, options: [])
+        }
+        
+        let task = URLSession.shared.dataTask(with: request as URLRequest) {
+            data, response, error in
+            if response == nil {
+                completion("request nil" as AnyObject)
+            }
+            do {
+                if data != nil{
+                    let json = try JSONSerialization.jsonObject(with: data! as Data, options:.allowFragments)
+                    if let dict = json as? NSDictionary {
+                        completion(dict as AnyObject)
+                    }
+                }
+            }
+            catch let error as NSError {
+                completion(error as AnyObject)
+            }
+        }
+        task.resume()
+    }
+    
+    func dateConverter(isoDate: String) -> String {
         let inputDateFormatter = DateFormatter()
         inputDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
@@ -79,21 +90,20 @@ public class ModelController{
         guard let date = inputDateFormatter.date(from: isoDate) else {
             return ""
         }
-
+        
         let resultString = outputDateFormatter.string(from: date)
         return resultString
     }
  }
 
  
- extension UIImageView {
-    
-    func downloadedFrom(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+ extension UIImageView: UIImageViewDelegate {
+    public func downloadedFromLink(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
         guard let url = URL(string: link) else { return }
-        downloadedFrom(url: url, contentMode: mode)
+        downloadedFromURL(url: url, contentMode: mode)
     }
     
-    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+    public func downloadedFromURL(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
         contentMode = mode
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard
@@ -104,8 +114,9 @@ public class ModelController{
                 else { return }
             DispatchQueue.main.async() { () -> Void in
                 self.image = image
-           
+                
             }
-        }.resume()
+            }.resume()
     }
  }
+

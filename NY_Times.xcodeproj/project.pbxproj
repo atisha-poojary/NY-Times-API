@@ -10,6 +10,7 @@
 		3B68C47A1FA056230016209C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B68C4791FA056230016209C /* DetailViewController.swift */; };
 		3BC47A461FA0091100D4FF29 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC47A451FA0091100D4FF29 /* CustomTableViewCell.swift */; };
 		3BC47A4C1FA009B200D4FF29 /* ModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC47A4B1FA009B200D4FF29 /* ModelController.swift */; };
+		3BD10E951FA69A050050E153 /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD10E941FA69A050050E153 /* News.swift */; };
 		3BD43E851F985F38009E73B0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD43E841F985F38009E73B0 /* AppDelegate.swift */; };
 		3BD43E871F985F38009E73B0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD43E861F985F38009E73B0 /* ViewController.swift */; };
 		3BD43E8A1F985F38009E73B0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BD43E881F985F38009E73B0 /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 		3B68C4791FA056230016209C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		3BC47A451FA0091100D4FF29 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		3BC47A4B1FA009B200D4FF29 /* ModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelController.swift; sourceTree = "<group>"; };
+		3BD10E941FA69A050050E153 /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
 		3BD43E811F985F38009E73B0 /* NY_Times.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NY_Times.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BD43E841F985F38009E73B0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BD43E861F985F38009E73B0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				3BC47A4B1FA009B200D4FF29 /* ModelController.swift */,
+				3BD10E941FA69A050050E153 /* News.swift */,
 			);
 			path = ModelController;
 			sourceTree = "<group>";
@@ -169,6 +172,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BD10E951FA69A050050E153 /* News.swift in Sources */,
 				3BC47A461FA0091100D4FF29 /* CustomTableViewCell.swift in Sources */,
 				3BC47A4C1FA009B200D4FF29 /* ModelController.swift in Sources */,
 				3B68C47A1FA056230016209C /* DetailViewController.swift in Sources */,
