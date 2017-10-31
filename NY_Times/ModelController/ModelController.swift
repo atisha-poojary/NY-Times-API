@@ -14,16 +14,12 @@
     func getRequest(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ()))
  }
  
- public protocol DateDelegate {
-    func dateConverter(isoDate: String) -> String
- }
- 
  public protocol UIImageViewDelegate {
     func downloadedFromLink(link: String, contentMode mode: UIViewContentMode)
     func downloadedFromURL(url: URL, contentMode mode: UIViewContentMode)
  }
  
- class ModelController: APIMethodDelegate, DateDelegate{
+ class ModelController: APIMethodDelegate{
     func isInternetAvailable() -> Bool{
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)

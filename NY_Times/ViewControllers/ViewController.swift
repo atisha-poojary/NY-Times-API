@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController  {
     
+    var newsViewModel = NewsViewModel()
+    
     @IBOutlet weak var tableView: UITableView!
     
     let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
@@ -18,8 +20,7 @@ class ViewController: UIViewController  {
     var pageNo:Int=0
     var limit:Int=20
     var offset:Int=0
-    var newsArr = [News]()
-    let modelClass = ModelController()
+    //var newsArr = [News]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,8 @@ class ViewController: UIViewController  {
         cache = NSCache()
         refreshCtrl.addTarget(self, action: #selector(self.refreshTableView), for: .valueChanged)
         tableView.addSubview(refreshCtrl)
+        
+        
         reloadTableView(limit: "20", offset: "0")
     }
     
@@ -35,30 +38,15 @@ class ViewController: UIViewController  {
     }
     
     @objc func reloadTableView(limit: String, offset: String){
-        callNewsWireAPI(limit, offset)
-    }
-    
-    func callNewsWireAPI(_ limit: String, _ offset: String){
-        ModelController().getRequest(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=\(limit)&offset=\(offset)&api-key=\(apiKey)", param: [:]){(result) -> () in
-            if let status = result["status"] as? String{
-                if status == "OK"{
-                    self.parseResult(result:(result["results"] as? [AnyObject])!)
-                }
-                else{
-                    self.showError(message: "Oops! Server error. Please try again later.")
-                }
-            }
-            else{
-                if let message = result["message"] as? String{
-                    self.showError(message: message)
-                }
-                else{
-                    self.showError(message: "Oops! Server error. Please try again later.")
-                }
-            }
+        //callNewsWireAPI(limit, offset)
+        newsViewModel.fetchNews{
+            reloadTableView(limit: "20", offset: "0")
         }
     }
+
     
+    
+    /*
     func parseResult(result: [AnyObject]){
         for dataDict in result{
             let news = News(slug_name: dataDict["slug_name"] as? String,
@@ -76,7 +64,7 @@ class ViewController: UIViewController  {
             self.tableView.reloadData()
             self.refreshCtrl.endRefreshing()
         }
-    }
+    }*/
     
     func showError(message: String){
         DispatchQueue.main.async{
@@ -88,11 +76,13 @@ class ViewController: UIViewController  {
 }
 extension ViewController : UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.newsArr.count
+        return self.newsViewModel.numberOfItemsInSection(section: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:CustomTableViewCell = (self.tableView?.dequeueReusableCell(withIdentifier: "customCell") as! CustomTableViewCell!)
+        
+        configureCell(cell: cell, indexPath: cell)
         
         let news = self.newsArr[indexPath.row]
         
@@ -112,7 +102,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
                 cell.imageViewHeightConstraint!.constant = 0
             }
         }
-        cell.dateLabel.text = modelClass.dateConverter(isoDate:(news.published_date!))
+        cell.dateLabel.text = newsViewModel.dateConverter(isoDate:(news.published_date!))
         
         cell.imageByLabel.text = news.byline
         
@@ -127,6 +117,37 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
         return cell
     }
     
+    func configureCell(cell: UITableViewCell, indexPath: IndexPath){
+        if (self.cache.object(forKey: "\(view.slug_name!)" as AnyObject) != nil){
+            cell.thumbnailImage.image = self.cache.object(forKey: "\(news.slug_name!)" as AnyObject) as? UIImage }
+        else{
+            if let multimediaArr: [AnyObject] = news.multimedia {
+                for multimediaDict in multimediaArr{
+                    let dict: [String:AnyObject] = multimediaDict as! [String:AnyObject]
+                    if dict["format"] as! String == "mediumThreeByTwo440"{
+                        cell.thumbnailImage.downloadedFromLink(link: dict["url"] as! String)
+                        cell.imageViewHeightConstraint!.constant = 242
+                    }
+                }
+            }
+            else{
+                cell.imageViewHeightConstraint!.constant = 0
+            }
+        }
+        cell.dateLabel.text = newsViewModel.dateConverter(isoDate:(news.published_date!))
+        
+        cell.imageByLabel.text = news.byline
+        
+        let attributedString = NSMutableAttributedString(string:"\((news.title!))\n")
+        
+        let attrs = [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 16.0)]
+        let abstract = NSMutableAttributedString(string:(news.abstract)!, attributes:attrs)
+        attributedString.append(abstract)
+        
+        cell.descriptionLabel.attributedText = attributedString
+    }
+    
+    /*
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath){
         if indexPath.row+1 == self.newsArr.count {
             pageNo = pageNo+1
@@ -141,6 +162,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
         let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
         vc.urlString = news.url
         self.navigationController?.show(vc, sender: nil)
-    }
+    }*/
 }
 
