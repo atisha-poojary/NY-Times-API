@@ -17,17 +17,18 @@ class NewsViewModel: DateDelegate {
     var news = [News]()
     
     let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
-    var pageNo:Int=0
-    var limit:Int=20
-    var offset:Int=0
     
-    func fetchNews(completion: ()->()){
+    func fetchNews(limit: String, offset:String, completion:@escaping ((AnyObject) -> ())){
         connection.makeAPICall(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=\(limit)&offset=\(offset)&api-key=\(apiKey)", param: [:]){ result in
             
             if let status = result["status"] as? String{
                 if status == "OK"{
                     self.news = self.parseResult(result: result["results"] as! [AnyObject])
+                    completion(self.news as AnyObject)
                 }
+            }
+            else{
+                completion("Error" as AnyObject)
             }
         }
     }

@@ -9,11 +9,12 @@
 import Foundation
 
 class Connection {
+    
     func makeAPICall(withParameter url: String, param: Dictionary<String, Any>, completion:@escaping ((AnyObject) -> ())){
         let url: NSURL = NSURL(string: url)!
         let request: NSMutableURLRequest = NSMutableURLRequest(url: url as URL)
         
-        request.httpMethod = "GET"
+        request.httpMethod =  "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
