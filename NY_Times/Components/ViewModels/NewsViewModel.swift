@@ -8,50 +8,38 @@
 
 import Foundation
 
+fileprivate let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
+fileprivate let limit = "2"
+fileprivate let offset = "2"
+
 public protocol DateDelegate {
     func dateConverter(isoDate: String) -> String
 }
 class NewsViewModel: DateDelegate {
-    
-    var connection = Connection()
-    var news = [News]()
-    
-    let apiKey = "4ff00b29642f478cb1e55487aa7dd1f7"
-    
-    func fetchNews(limit: String, offset:String, completion:@escaping ((AnyObject) -> ())){
-        connection.makeAPICall(withParameter: "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=\(limit)&offset=\(offset)&api-key=\(apiKey)", param: [:]){ result in
+    static func fetchResult(_ completionHandler: @escaping (Result) -> ()) {
+        let urlString = "http://api.nytimes.com/svc/news/v3/content/all/all.json?limit=\(limit)&offset=\(offset)&api-key=\(apiKey)"
+        
+        URLSession.shared.dataTask(with: URL(string: urlString)!, completionHandler: { (data, response, error) -> Void in
             
-            if let status = result["status"] as? String{
-                if status == "OK"{
-                    self.news = self.parseResult(result: result["results"] as! [AnyObject])
-                    completion(self.news as AnyObject)
-                }
-            }
-            else{
-                completion("Error" as AnyObject)
-            }
-        }
-    }
-    
-    func numberOfItemsInSection(section: Int) -> Int{
-        return self.news.count
-    }
-    
-    func parseResult(result: [AnyObject]) -> [News]{
-        var parsedNews = [News]()
-        for dataDict in result{
-            let news = News(slug_name: dataDict["slug_name"] as? String,
-                            multimedia: dataDict["multimedia"] as? [AnyObject],
-                            format: dataDict["format"] as? String,
-                            published_date: dataDict["published_date"] as? String,
-                            byline: dataDict["byline"] as? String,
-                            title: dataDict["title"] as? String,
-                            abstract: dataDict["abstract"] as? String,
-                            url: dataDict["url"] as? String)
+            guard let data = data else { return }
             
-            parsedNews.append(news)
-        }
-        return parsedNews
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            do {
+                let result = try JSONDecoder().decode(Result.self, from: data)
+                
+                DispatchQueue.main.async(execute: { () -> Void in
+                    completionHandler(result)
+                })
+                
+            } catch let err {
+                print(err)
+            }
+            
+        }) .resume()
     }
     
     func dateConverter(isoDate: String) -> String {
@@ -67,5 +55,5 @@ class NewsViewModel: DateDelegate {
         
         let resultString = outputDateFormatter.string(from: date)
         return resultString
-    }
+    }  
 }
